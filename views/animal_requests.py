@@ -235,3 +235,54 @@ def get_animals_by_status(status):
             animals.append(animal.__dict__)
 
             return animals
+
+def search_animals(query):
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # A SQL wildcard %
+        # % on both sides of query should retrieve anything that includes 
+        search_query = f"%{query}%"
+
+        # SQL query
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id,
+            l.name location_name,
+            l.address location_address,
+            o.name customer_name,
+            o.address customer_address,
+            o.email customer_email,
+            o.password customer_password
+        FROM animal a
+        JOIN location l ON a.location_id = l.id
+        JOIN customer o ON a.customer_id = o.id
+        WHERE a.name LIKE ? OR a.breed LIKE ?
+        """, (search_query, search_query))
+
+        animals = []
+        dataset = db_cursor.fetchall()
+        # fetchall returns list of dictionaries for each row
+
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+
+        location = Location(row['location_id'], row['location_name'], row['location_address'])
+
+        animal.location = location.__dict__
+
+        customer = Customer(row['customer_id'], row['customer_name'], row['customer_address'], row['customer_email'], row['customer_password'])
+
+        animal.customer = customer.__dict__
+
+        animals.append(animal.__dict__)
+
+        return animals
