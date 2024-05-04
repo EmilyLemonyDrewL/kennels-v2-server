@@ -83,7 +83,7 @@ def get_all_animals():
 
             customer = Customer(row['customer_id'], row['customer_name'], row['customer_address'], row['customer_email'], row['customer_password'])
 
-            animal.customer = customer.__dict__
+            animal.customer = customer.no_password()
 
             animals.append(animal.__dict__) # see the notes below for an explanation on this line of code.
 
@@ -172,6 +172,7 @@ def update_animal(id, new_animal):
     else:
         # Forces 204 response by main module
         return True
+
 
 def delete_animal(id):
     with sqlite3.connect("./kennel.sqlite3") as conn:
