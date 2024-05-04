@@ -6,3 +6,11 @@ class Customer():
         self.address = address
         self.email = email
         self.password = password
+
+    def no_password(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "address": self.address,
+            "email": self.email
+        }
